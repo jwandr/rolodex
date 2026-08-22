@@ -456,23 +456,17 @@ main {
 }
 
 .dest-tile .tile-image {
-  height: 148px;
-
+  height: 160px;
+  background-color: var(--paper-deep);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background:
-    linear-gradient(
-      135deg,
-      var(--blue-soft),
-      var(--green-soft)
-    );
-
-  border-bottom: 1px solid var(--border);
-
   font-size: 44px;
-
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--card-edge);
   overflow: hidden;
 }
 
