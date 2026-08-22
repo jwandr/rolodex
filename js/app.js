@@ -275,21 +275,7 @@ function renderDestination() {
         <span class="count">${state.cards.length} thing${state.cards.length === 1 ? '' : 's'} saved</span>
         <button class="icon-btn" id="edit-destination" title="Edit destination">✎</button>
       </div>
-      ${d.short_description ? `
-        <p class="desc">${escapeHtml(d.short_description)}</p>
-      ` : ''}
-
-      ${d.description ? `
-        <p class="dest-description">${escapeHtml(d.description)}</p>
-      ` : ''}
-
-      ${(d.tags || []).length ? `
-        <div class="dest-tags">
-          ${(d.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join('')}
-        </div>
-      ` : ''}
-
-      ${d.planned_start ? `<p class="plan-line">${formatDateRange(d.planned_start, d.planned_end)}${d.planned_days ? ' · ' + d.planned_days + ' days planned' : ''}</p>` : ''}
+      
       ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''}
 
       <div class="toolbar">
