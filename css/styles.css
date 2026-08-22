@@ -369,7 +369,7 @@ main {
 
   margin: 0 auto;
 
-  padding: 40px 28px 120px;
+  padding: 0px 28px 120px;
 }
 
 
@@ -2060,7 +2060,7 @@ main {
 @media (max-width: 640px) {
 
   .topbar {
-    height: 58px;
+    height: 42px;
     padding: 0 16px;
   }
 
