@@ -471,7 +471,7 @@ function browseCardHtml(c) {
 }
 
 function wireBrowseCardActions(c) {
-  const statusSel = document.querySelector('.bc-status');
+  const statusSel = document.getElementById('bc-status');
   if (statusSel) statusSel.addEventListener('change', async () => {
     const newStatus = statusSel.value;
     c.status = newStatus;
@@ -480,7 +480,7 @@ function wireBrowseCardActions(c) {
     try { await api.updateCard(c.id, { status: newStatus }); showToast(`Marked as ${CARD_STATUSES[newStatus].label.toLowerCase()}`); }
     catch (err) { showToast('Could not save — will retry when back online'); }
   });
-  const delBtn = document.querySelector('.bc-delete');
+  const delBtn = document.getElementById('bc-delete');
   if (delBtn) delBtn.addEventListener('click', async () => {
     if (!window.confirm(`Remove "${c.title}"? This can't be undone.`)) return;
     try {
@@ -490,12 +490,12 @@ function wireBrowseCardActions(c) {
       renderDestination();
     } catch (err) { showToast('Could not remove — try again'); }
   });
-  const mapBtn = document.querySelector('.bc-view-map');
+  const mapBtn = document.getElementById('bc-view-map');
   if (mapBtn) mapBtn.addEventListener('click', () => {
     state.destView = 'map';
     renderDestination();
   });
-  const editBtn = document.querySelector('.bc-edit');
+  const editBtn = document.getElementById('bc-edit');
   if (editBtn) {
     editBtn.addEventListener('click', () => {
       openEditCardSheet(c);
