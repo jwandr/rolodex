@@ -245,14 +245,6 @@ function computeInsights() {
   const insights = [];
   const tagCounts = {};
   state.cards.forEach(c => (c.tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
-  Object.entries(tagCounts).forEach(([tag, count]) => {
-    if (count >= 4) {
-      const id = `tag:${tag}`;
-      if (!state.dismissedInsights.includes(id)) {
-        insights.push({ id, text: `${escapeHtml(state.destination.name)} is starting to look very <strong>${escapeHtml(tag.replace('#', ''))}</strong>. ${count} related cards.` });
-      }
-    }
-  });
   const locCounts = {};
   state.cards.forEach(c => {
     if (c.location_name) {
