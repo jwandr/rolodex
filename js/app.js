@@ -471,7 +471,7 @@ function browseCardHtml(c) {
 }
 
 function wireBrowseCardActions(c) {
-  const statusSel = document.getElementById('bc-status');
+  const statusSel = document.querySelector('.bc-status');
   if (statusSel) statusSel.addEventListener('change', async () => {
     const newStatus = statusSel.value;
     c.status = newStatus;
@@ -480,7 +480,7 @@ function wireBrowseCardActions(c) {
     try { await api.updateCard(c.id, { status: newStatus }); showToast(`Marked as ${CARD_STATUSES[newStatus].label.toLowerCase()}`); }
     catch (err) { showToast('Could not save — will retry when back online'); }
   });
-  const delBtn = document.getElementById('bc-delete');
+  const delBtn = document.querySelector('.bc-delete');
   if (delBtn) delBtn.addEventListener('click', async () => {
     if (!window.confirm(`Remove "${c.title}"? This can't be undone.`)) return;
     try {
@@ -490,12 +490,12 @@ function wireBrowseCardActions(c) {
       renderDestination();
     } catch (err) { showToast('Could not remove — try again'); }
   });
-  const mapBtn = document.getElementById('bc-view-map');
+  const mapBtn = document.querySelector('.bc-view-map');
   if (mapBtn) mapBtn.addEventListener('click', () => {
     state.destView = 'map';
     renderDestination();
   });
-  const editBtn = document.getElementById('bc-edit');
+  const editBtn = document.querySelector('.bc-edit');
   if (editBtn) {
     editBtn.addEventListener('click', () => {
       openEditCardSheet(c);
@@ -966,9 +966,30 @@ function renderMapView(container, list) {
         <a class="tbtn" href="${escapeHtml(state.destination.map_url)}" target="_blank" rel="noopener">↗ Open My Maps</a>
       </div>` : ''}
     <div class="map-explorer">
-      <div class="map-panel">
-        <div id="leaflet-map"></div>
-      </div>
+      container.innerHTML = `
+        ${state.destination.map_url ? `
+          <div class="map-link-note">
+            <span>📍 Full trip mapping lives in Google My Maps.</span>
+            <a class="tbtn" href="${escapeHtml(state.destination.map_url)}" target="_blank" rel="noopener">
+              ↗ Open My Maps
+            </a>
+          </div>` : ''}
+
+        <div class="map-card-layout">
+          <div class="map-panel">
+            <div id="leaflet-map"></div>
+          </div>
+
+          <div class="map-card-panel" id="map-card-panel">
+            <div class="empty-state">
+              <div class="glyph">📍</div>
+              <p>Select a location on the map</p>
+            </div>
+          </div>
+        </div>
+
+        ${!withLoc.length ? '<p style="color:var(--ink-faint); font-size:13px;">None of the visible cards have a location yet.</p>' : ''}
+      `;
       <div class="map-card-panel">
         ${
           state.selectedMapCard
@@ -984,6 +1005,9 @@ function renderMapView(container, list) {
     ${!withLoc.length ? '<p style="color:var(--ink-faint); font-size:13px; margin-top:10px;">None of the visible cards have a location yet.</p>' : ''}
   `;
   if (!window.L) return; // Leaflet failed to load — panel shows without pins
+  if (state.selectedMapCard) {
+    wireBrowseCardActions(state.selectedMapCard);
+  }
   const mapEl = document.getElementById('leaflet-map');
   const map = L.map(mapEl, { scrollWheelZoom: false });
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
