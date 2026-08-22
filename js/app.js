@@ -610,15 +610,43 @@ function openEditCardSheet(card) {
         />
       </div>
 
-      <div class="field">
+      <div class="field location-field">
         <label>Location</label>
 
-        <input
-          type="text"
-          id="ec-location"
-          value="${escapeHtml(card.location_name || '')}"
-          placeholder="Lisbon, Portugal"
-        />
+        <div class="location-search-wrap">
+          <div class="location-input-wrap">
+            <span class="location-icon">📍</span>
+
+            <input
+              type="text"
+              id="ec-location"
+              value="${escapeHtml(card.location_name || '')}"
+              placeholder="Search for a place or address..."
+              autocomplete="off"
+            />
+
+            <button
+              type="button"
+              class="location-clear"
+              id="ec-location-clear"
+              aria-label="Clear location"
+              ${card.location_name ? '' : 'hidden'}
+            >×</button>
+          </div>
+
+          <div
+            class="location-results"
+            id="ec-location-results"
+            hidden
+          ></div>
+        </div>
+
+        <input type="hidden" id="ec-lat" value="${card.lat ?? ''}" />
+        <input type="hidden" id="ec-lng" value="${card.lng ?? ''}" />
+
+        <p class="field-hint">
+          Start typing a place and choose the matching location.
+        </p>
       </div>
 
       <div class="field-row">
@@ -707,6 +735,110 @@ function openEditCardSheet(card) {
   };
 
   renderTags();
+
+  const locationInput = document.getElementById('ec-location');
+  const locationResults = document.getElementById('ec-location-results');
+  const locationClear = document.getElementById('ec-location-clear');
+
+  let locationSearchTimer = null;
+
+  locationInput.addEventListener('input', () => {
+    clearTimeout(locationSearchTimer);
+
+    const query = locationInput.value.trim();
+
+    locationClear.hidden = !query;
+
+    // If the user changes the location manually,
+    // don't retain the old coordinates.
+    document.getElementById('ec-lat').value = '';
+    document.getElementById('ec-lng').value = '';
+
+    if (query.length < 3) {
+      locationResults.hidden = true;
+      locationResults.innerHTML = '';
+      return;
+    }
+
+    locationResults.hidden = false;
+    locationResults.innerHTML =
+      `<div class="location-loading">Searching places…</div>`;
+
+    locationSearchTimer = setTimeout(async () => {
+      try {
+        const results = await searchLocation(query);
+
+        if (!results.length) {
+          locationResults.innerHTML =
+            `<div class="location-empty">No places found.</div>`;
+          return;
+        }
+
+        locationResults.innerHTML = results.map((result, index) => `
+          <button
+            type="button"
+            class="location-result"
+            data-location-index="${index}"
+          >
+            <span class="location-result-icon">📍</span>
+            <span class="location-result-text">
+              <strong>${escapeHtml(
+                result.display_name.split(',')[0]
+              )}</strong>
+              <small>${escapeHtml(
+                result.display_name
+                  .split(',')
+                  .slice(1)
+                  .join(',')
+                  .trim()
+              )}</small>
+            </span>
+          </button>
+        `).join('');
+
+        locationResults
+          .querySelectorAll('[data-location-index]')
+          .forEach(button => {
+            button.addEventListener('click', () => {
+              const result = results[
+                Number(button.dataset.locationIndex)
+              ];
+
+              locationInput.value =
+                result.display_name.split(',')[0];
+
+              document.getElementById('ec-lat').value =
+                result.lat;
+
+              document.getElementById('ec-lng').value =
+                result.lon;
+
+              locationResults.hidden = true;
+
+              locationClear.hidden = false;
+            });
+          });
+
+      } catch (err) {
+        console.error(err);
+
+        locationResults.innerHTML =
+          `<div class="location-empty">
+            Couldn't search for that place.
+          </div>`;
+      }
+    }, 400);
+  });
+
+  locationClear.addEventListener('click', () => {
+    locationInput.value = '';
+    document.getElementById('ec-lat').value = '';
+    document.getElementById('ec-lng').value = '';
+    locationResults.hidden = true;
+    locationResults.innerHTML = '';
+    locationClear.hidden = true;
+    locationInput.focus();
+  });
 
   overlay.addEventListener('click', e => {
     if (e.target === overlay) overlay.remove();
@@ -1363,6 +1495,35 @@ function ensureFab() {
     else showToast('Open a destination first to add something to it');
   });
   document.body.appendChild(fab);
+}
+
+async function searchLocation(query) {
+  if (!query || query.trim().length < 3) return [];
+
+  const destination = state.destination?.name || '';
+
+  const searchQuery = destination
+    ? `${query.trim()}, ${destination}`
+    : query.trim();
+
+  const url =
+    `https://nominatim.openstreetmap.org/search` +
+    `?format=jsonv2` +
+    `&q=${encodeURIComponent(searchQuery)}` +
+    `&limit=5` +
+    `&addressdetails=1`;
+
+  const response = await fetch(url, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Location search failed');
+  }
+
+  return response.json();
 }
 
 window.addEventListener('popstate', (e) => {

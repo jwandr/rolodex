@@ -2185,3 +2185,127 @@ main {
     padding: 17px 18px 19px;
   }
 }
+
+/* ============================================================
+   Location search
+   ============================================================ */
+
+.location-search-wrap {
+  position: relative;
+}
+
+.location-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.location-icon {
+  position: absolute;
+  left: 13px;
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.location-input-wrap input {
+  padding-left: 40px !important;
+  padding-right: 40px !important;
+}
+
+.location-clear {
+  position: absolute;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: var(--paper-deep);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.location-clear:hover {
+  background: var(--paper-line);
+  color: var(--ink);
+}
+
+.location-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 5px);
+  z-index: 20;
+
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 12px;
+
+  box-shadow: var(--shadow-lift);
+  overflow: hidden;
+}
+
+.location-result {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+
+  padding: 12px 14px;
+  border: none;
+  border-bottom: 1px solid var(--paper-line);
+
+  background: var(--card);
+  color: var(--ink);
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.location-result:last-child {
+  border-bottom: none;
+}
+
+.location-result:hover {
+  background: var(--paper);
+}
+
+.location-result-icon {
+  flex: 0 0 auto;
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+.location-result-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+
+.location-result-text strong {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.location-result-text small {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.location-loading,
+.location-empty {
+  padding: 14px;
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
