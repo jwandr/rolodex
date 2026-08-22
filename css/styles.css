@@ -2,55 +2,48 @@
    Tokens
    ============================================================ */
 :root {
-  --paper: #F7F8F5;
-  --paper-deep: #EEF0EB;
-  --paper-line: #DDE1DA;
+  --bg: #F6F7F5;
+  --surface: #FFFFFF;
+  --surface-soft: #F0F2EF;
 
-  --ink: #202522;
-  --ink-soft: #626A64;
-  --ink-faint: #98A09A;
+  --text: #171A18;
+  --text-secondary: #626963;
+  --text-muted: #929993;
 
-  --card: #FFFFFF;
-  --card-edge: #E8EBE7;
+  --border: #E3E6E3;
+  --border-strong: #D3D8D4;
 
-  --accent: #D76545;
-  --accent-deep: #B94C30;
-  --accent-tint: #FBE8E1;
+  --accent: #FF6548;
+  --accent-soft: #FFF0EC;
 
-  --sage: #547563;
-  --sage-deep: #3F5E4D;
-  --sage-tint: #E4EEE8;
+  --blue: #4778A8;
+  --blue-soft: #EAF1F7;
 
-  --gold: #B28A3A;
-  --gold-tint: #F5EDDA;
+  --green: #4E8068;
+  --green-soft: #EAF2ED;
 
-  --danger: #B54B45;
+  --yellow: #C89435;
+  --yellow-soft: #FBF3DF;
 
-  --radius-card: 18px;
-  --radius-sm: 10px;
+  --purple: #7968A8;
+  --purple-soft: #F0ECF8;
+
+  --danger: #C95050;
+
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 9px;
 
   --shadow-card:
-    0 1px 2px rgba(25, 30, 27, .04),
-    0 8px 30px rgba(25, 30, 27, .06);
+    0 1px 2px rgba(20, 25, 22, 0.03),
+    0 6px 20px rgba(20, 25, 22, 0.04);
 
-  --shadow-lift:
-    0 8px 30px rgba(25, 30, 27, .12);
-
-  --font-display:
-    'Fraunces',
-    Georgia,
-    serif;
-
-  --font-body:
-    'Inter',
+  --font:
+    'DM Sans',
     -apple-system,
     BlinkMacSystemFont,
+    'Segoe UI',
     sans-serif;
-
-  --font-mono:
-    'IBM Plex Mono',
-    ui-monospace,
-    monospace;
 }
 
 * { box-sizing: border-box; }
