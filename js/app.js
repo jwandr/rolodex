@@ -289,8 +289,6 @@ function renderDestination() {
         </div>
       ` : ''}
 
-      document.getElementById('edit-destination')
-        .addEventListener('click', openEditDestinationSheet);
       ${d.planned_start ? `<p class="plan-line">${formatDateRange(d.planned_start, d.planned_end)}${d.planned_days ? ' · ' + d.planned_days + ' days planned' : ''}</p>` : ''}
       ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''}
 
@@ -322,6 +320,9 @@ function renderDestination() {
 
     <div id="dest-content"></div>
   `;
+
+  document.getElementById('edit-destination')
+        .addEventListener('click', openEditDestinationSheet);
 
   document.getElementById('back-btn').addEventListener('click', goToCatalogue);
   document.getElementById('surprise-btn').addEventListener('click', () => surpriseMe());
