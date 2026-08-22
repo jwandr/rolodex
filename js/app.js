@@ -23,6 +23,7 @@ const state = {
   dismissedInsights: JSON.parse(localStorage.getItem('rolodex_dismissed_insights') || '[]'),
   whoami: localStorage.getItem('rolodex_whoami') || '',
   leafletMap: null,
+  selectedMapCard: null,
 };
 
 const app = document.getElementById('app');
@@ -954,13 +955,32 @@ function touchViewed(id) { api.touchLastViewed(id); }
 // ---------- Map view ----------
 function renderMapView(container, list) {
   const withLoc = list.filter(c => c.lat && c.lng);
+  if (state.leafletMap) {
+    state.leafletMap.remove();
+    state.leafletMap = null;
+  }
   container.innerHTML = `
     ${state.destination.map_url ? `
       <div class="map-link-note">
         <span>📍 Full trip mapping lives in Google My Maps.</span>
         <a class="tbtn" href="${escapeHtml(state.destination.map_url)}" target="_blank" rel="noopener">↗ Open My Maps</a>
       </div>` : ''}
-    <div class="map-panel"><div id="leaflet-map"></div></div>
+    <div class="map-explorer">
+      <div class="map-panel">
+        <div id="leaflet-map"></div>
+      </div>
+      <div class="map-card-panel">
+        ${
+          state.selectedMapCard
+            ? browseCardHtml(state.selectedMapCard)
+            : `
+              <div class="map-empty">
+                Select a place on the map
+              </div>
+            `
+        }
+      </div>
+    </div>
     ${!withLoc.length ? '<p style="color:var(--ink-faint); font-size:13px; margin-top:10px;">None of the visible cards have a location yet.</p>' : ''}
   `;
   if (!window.L) return; // Leaflet failed to load — panel shows without pins
@@ -976,7 +996,10 @@ function renderMapView(container, list) {
     withLoc.forEach(c => {
       const marker = L.marker([c.lat, c.lng]).addTo(map);
       marker.bindPopup(`<strong>${escapeHtml(c.title)}</strong>`);
-      marker.on('click', () => openBrowseAt(c.id));
+      marker.on('click', () => {
+        state.selectedMapCard = c;
+        renderMapView(container, list);
+      });
       bounds.push([c.lat, c.lng]);
     });
     map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });

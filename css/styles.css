@@ -2309,3 +2309,37 @@ main {
   font-size: 12.5px;
   color: var(--ink-faint);
 }
+
+.map-explorer {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 16px;
+  height: calc(100vh - 260px);
+}
+
+.map-panel {
+  min-height: 500px;
+}
+
+#leaflet-map {
+  height:100%;
+  width:100%;
+  border-radius:16px;
+}
+
+.map-card-panel {
+  overflow-y:auto;
+}
+
+@media(max-width:900px){
+
+  .map-explorer {
+    grid-template-columns:1fr;
+    height:auto;
+  }
+
+  .map-panel {
+    height:450px;
+  }
+
+}
