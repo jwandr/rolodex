@@ -46,6 +46,18 @@ export async function createDestination(payload) {
   return data;
 }
 
+export async function updateDestination(id, patch) {
+  const { data, error } = await getClient()
+    .from('rolodex_destinations')
+    .update(patch)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 // ---------- Cards ----------
 export async function fetchCards(destinationId) {
   const { data, error } = await getClient()

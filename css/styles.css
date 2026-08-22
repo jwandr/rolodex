@@ -2,36 +2,55 @@
    Tokens
    ============================================================ */
 :root {
-  --paper: #F2EBDA;
-  --paper-deep: #E7DCC0;
-  --paper-line: #D8CBA8;
-  --ink: #2B2823;
-  --ink-soft: #58524A;
-  --ink-faint: #948D7E;
-  --card: #FFFCF5;
-  --card-edge: #EBE3CE;
+  --paper: #F7F8F5;
+  --paper-deep: #EEF0EB;
+  --paper-line: #DDE1DA;
 
-  --accent: #B5502A;       /* rust stamp ink */
-  --accent-deep: #8C3C1E;
-  --accent-tint: #F3DFCF;
+  --ink: #202522;
+  --ink-soft: #626A64;
+  --ink-faint: #98A09A;
 
-  --sage: #4F6B57;         /* secondary — status/tags */
-  --sage-deep: #3A4F40;
-  --sage-tint: #DEE7DA;
+  --card: #FFFFFF;
+  --card-edge: #E8EBE7;
 
-  --gold: #A2792F;         /* must-do / favourite */
-  --gold-tint: #F1E4C2;
+  --accent: #D76545;
+  --accent-deep: #B94C30;
+  --accent-tint: #FBE8E1;
 
-  --danger: #9C3B34;
+  --sage: #547563;
+  --sage-deep: #3F5E4D;
+  --sage-tint: #E4EEE8;
 
-  --radius-card: 16px;
-  --radius-sm: 8px;
-  --shadow-card: 0 1px 2px rgba(43,40,35,0.08), 0 8px 20px -10px rgba(43,40,35,0.25);
-  --shadow-lift: 0 4px 10px rgba(43,40,35,0.1), 0 16px 32px -14px rgba(43,40,35,0.3);
+  --gold: #B28A3A;
+  --gold-tint: #F5EDDA;
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --danger: #B54B45;
+
+  --radius-card: 18px;
+  --radius-sm: 10px;
+
+  --shadow-card:
+    0 1px 2px rgba(25, 30, 27, .04),
+    0 8px 30px rgba(25, 30, 27, .06);
+
+  --shadow-lift:
+    0 8px 30px rgba(25, 30, 27, .12);
+
+  --font-display:
+    'Fraunces',
+    Georgia,
+    serif;
+
+  --font-body:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  --font-mono:
+    'IBM Plex Mono',
+    ui-monospace,
+    monospace;
 }
 
 * { box-sizing: border-box; }
@@ -44,9 +63,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 body {
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(43,40,35,0.05) 1px, transparent 0);
-  background-size: 22px 22px;
+  background: var(--paper);
   min-height: 100vh;
 }
 img { max-width: 100%; display: block; }
@@ -800,4 +817,105 @@ main { flex: 1; width: 100%; max-width: 1080px; margin: 0 auto; padding: 32px 24
   .browse-stage { height: 500px; }
   .fab span.label { display: none; }
   .fab { padding: 15px; }
+}
+
+/* ============================================================
+   Editable fields
+   ============================================================ */
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--paper-line);
+  background: var(--card);
+  border-radius: 50%;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .18s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.field-hint {
+  display: block;
+  margin-top: 3px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: var(--ink-faint);
+}
+
+.field-large {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.editable-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.editable-tag {
+  border: 1px solid var(--paper-line);
+  background: var(--paper);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.editable-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.editable-tag span {
+  margin-left: 5px;
+  opacity: .55;
+}
+
+.editable-tag.add {
+  border-style: dashed;
+  background: transparent;
+  color: var(--ink-faint);
+}
+
+.dest-description {
+  max-width: 700px;
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.dest-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.dest-tags span {
+  background: var(--sage-tint);
+  color: var(--sage-deep);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 600;
 }

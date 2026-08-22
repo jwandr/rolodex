@@ -273,7 +273,24 @@ function renderDestination() {
         <span class="flag">${d.flag || '✦'}</span>
         <h1>${escapeHtml(d.name)}</h1>
         <span class="count">${state.cards.length} thing${state.cards.length === 1 ? '' : 's'} saved</span>
+        <button class="icon-btn" id="edit-destination" title="Edit destination">✎</button>
       </div>
+      ${d.short_description ? `
+        <p class="desc">${escapeHtml(d.short_description)}</p>
+      ` : ''}
+
+      ${d.description ? `
+        <p class="dest-description">${escapeHtml(d.description)}</p>
+      ` : ''}
+
+      ${(d.tags || []).length ? `
+        <div class="dest-tags">
+          ${(d.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join('')}
+        </div>
+      ` : ''}
+
+      document.getElementById('edit-destination')
+        .addEventListener('click', openEditDestinationSheet);
       ${d.planned_start ? `<p class="plan-line">${formatDateRange(d.planned_start, d.planned_end)}${d.planned_days ? ' · ' + d.planned_days + ' days planned' : ''}</p>` : ''}
       ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''}
 
@@ -432,9 +449,26 @@ function browseCardHtml(c) {
         <div class="bc-tags">${(c.tags || []).map(t => `<span class="rc-tags"><span>${escapeHtml(t)}</span></span>`).join('')}</div>
         <select class="status-select" id="bc-status">${statusOptions}</select>
         <div class="bc-actions">
-          ${c.url ? `<a class="tbtn" href="${escapeHtml(c.url)}" target="_blank" rel="noopener">↗ Open source</a>` : ''}
-          ${c.lat ? `<button class="tbtn" id="bc-view-map">📍 View on map</button>` : ''}
-          <button class="tbtn" id="bc-delete">🗑 Remove</button>
+          <button class="tbtn" id="bc-edit">✎ Edit</button>
+
+          ${c.url ? `
+            <a class="tbtn"
+              href="${escapeHtml(c.url)}"
+              target="_blank"
+              rel="noopener">
+              ↗ Open source
+            </a>
+          ` : ''}
+
+          ${c.lat ? `
+            <button class="tbtn" id="bc-view-map">
+              📍 View on map
+            </button>
+          ` : ''}
+
+          <button class="tbtn" id="bc-delete">
+            🗑 Remove
+          </button>
         </div>
         <div class="bc-meta">
           <span>${c.added_by ? 'Added by ' + escapeHtml(c.added_by) : ''}</span>
@@ -469,6 +503,309 @@ function wireBrowseCardActions(c) {
     state.destView = 'map';
     renderDestination();
   });
+  const editBtn = document.getElementById('bc-edit');
+  if (editBtn) {
+    editBtn.addEventListener('click', () => {
+      openEditCardSheet(c);
+    });
+  }
+}
+
+function openEditCardSheet(card) {
+  const overlay = document.createElement('div');
+
+  overlay.className = 'sheet-overlay';
+  overlay.id = 'edit-card-overlay';
+
+  let tags = [...(card.tags || [])];
+
+  overlay.innerHTML = `
+    <div class="sheet">
+
+      <div class="sheet-head">
+        <div>
+          <p class="eyebrow">Edit card</p>
+          <h2>${escapeHtml(card.title)}</h2>
+        </div>
+
+        <button class="sheet-close" id="ec-close">✕</button>
+      </div>
+
+      <div class="field">
+        <label>Title</label>
+        <input
+          type="text"
+          id="ec-title"
+          value="${escapeHtml(card.title || '')}"
+        />
+      </div>
+
+      <div class="field">
+        <label>Why did we save this?</label>
+        <textarea
+          id="ec-note"
+          class="field-large"
+          placeholder="This looks absolutely bonkers..."
+        >${escapeHtml(card.note || '')}</textarea>
+      </div>
+
+      <div class="field">
+        <label>Description</label>
+        <textarea
+          id="ec-description"
+          class="field-large"
+          placeholder="What is this?"
+        >${escapeHtml(card.description || '')}</textarea>
+      </div>
+
+      <div class="field">
+        <label>Type</label>
+
+        <div class="capture-tabs">
+          ${Object.entries(CARD_TYPES).map(([key, info]) => `
+            <button
+              class="capture-tab ${card.type === key ? 'active' : ''}"
+              data-type="${key}">
+              ${info.icon} ${info.label}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+
+        <select id="ec-status">
+          ${Object.entries(CARD_STATUSES).map(([key, info]) => `
+            <option
+              value="${key}"
+              ${card.status === key ? 'selected' : ''}>
+              ${info.icon} ${info.label}
+            </option>
+          `).join('')}
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Link</label>
+
+        <input
+          type="url"
+          id="ec-url"
+          value="${escapeHtml(card.url || '')}"
+          placeholder="https://..."
+        />
+      </div>
+
+      <div class="field">
+        <label>Source</label>
+
+        <input
+          type="text"
+          id="ec-source"
+          value="${escapeHtml(card.source || '')}"
+          placeholder="Website, publication, friend..."
+        />
+      </div>
+
+      <div class="field">
+        <label>Image URL</label>
+
+        <input
+          type="url"
+          id="ec-image"
+          value="${escapeHtml(card.image_url || '')}"
+          placeholder="https://..."
+        />
+      </div>
+
+      <div class="field">
+        <label>Location</label>
+
+        <input
+          type="text"
+          id="ec-location"
+          value="${escapeHtml(card.location_name || '')}"
+          placeholder="Lisbon, Portugal"
+        />
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Latitude</label>
+          <input
+            type="number"
+            step="any"
+            id="ec-lat"
+            value="${card.lat ?? ''}"
+          />
+        </div>
+
+        <div class="field">
+          <label>Longitude</label>
+          <input
+            type="number"
+            step="any"
+            id="ec-lng"
+            value="${card.lng ?? ''}"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tags</label>
+
+        <div class="editable-tags" id="ec-tags"></div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="btn-secondary" id="ec-cancel">
+          Cancel
+        </button>
+
+        <button class="btn-primary" id="ec-save">
+          Save changes
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  let selectedType = card.type || 'other';
+
+  const renderTags = () => {
+    const container = document.getElementById('ec-tags');
+
+    container.innerHTML = `
+      ${tags.map(tag => `
+        <button class="editable-tag" data-tag="${escapeHtml(tag)}">
+          ${escapeHtml(tag)} <span>×</span>
+        </button>
+      `).join('')}
+
+      <button class="editable-tag add" id="ec-add-tag">
+        + Add tag
+      </button>
+    `;
+
+    container.querySelectorAll('[data-tag]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        tags = tags.filter(t => t !== btn.dataset.tag);
+        renderTags();
+      });
+    });
+
+    document.getElementById('ec-add-tag')
+      .addEventListener('click', () => {
+
+        const value = prompt('Add a tag');
+
+        if (!value) return;
+
+        const tag = value.startsWith('#')
+          ? value
+          : `#${value}`;
+
+        if (!tags.includes(tag)) {
+          tags.push(tag);
+          renderTags();
+        }
+      });
+  };
+
+  renderTags();
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.getElementById('ec-close')
+    .addEventListener('click', () => overlay.remove());
+
+  document.getElementById('ec-cancel')
+    .addEventListener('click', () => overlay.remove());
+
+  overlay.querySelectorAll('[data-type]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedType = btn.dataset.type;
+
+      overlay
+        .querySelectorAll('[data-type]')
+        .forEach(b => b.classList.toggle(
+          'active',
+          b.dataset.type === selectedType
+        ));
+    });
+  });
+
+  document.getElementById('ec-save')
+    .addEventListener('click', async () => {
+
+      const button = document.getElementById('ec-save');
+
+      const patch = {
+        title: document.getElementById('ec-title').value.trim(),
+        note: document.getElementById('ec-note').value.trim() || null,
+        description:
+          document.getElementById('ec-description').value.trim() || null,
+        type: selectedType,
+        status: document.getElementById('ec-status').value,
+        url: document.getElementById('ec-url').value.trim() || null,
+        source:
+          document.getElementById('ec-source').value.trim() || null,
+        image_url:
+          document.getElementById('ec-image').value.trim() || null,
+        location_name:
+          document.getElementById('ec-location').value.trim() || null,
+        lat: document.getElementById('ec-lat').value
+          ? Number(document.getElementById('ec-lat').value)
+          : null,
+        lng: document.getElementById('ec-lng').value
+          ? Number(document.getElementById('ec-lng').value)
+          : null,
+        tags
+      };
+
+      if (!patch.title) {
+        alert('A card needs a title.');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Saving…';
+
+      try {
+        const updated =
+          await api.updateCard(card.id, patch);
+
+        const index =
+          state.cards.findIndex(c => c.id === card.id);
+
+        if (index >= 0) {
+          state.cards[index] = updated;
+        }
+
+        state.destination =
+          { ...state.destination };
+
+        overlay.remove();
+
+        renderDestination();
+
+        showToast('Card updated');
+
+      } catch (err) {
+        button.disabled = false;
+        button.textContent = 'Save changes';
+
+        alert(
+          'Could not save: ' +
+          (err.message || err)
+        );
+      }
+    });
 }
 
 function openBrowseAt(cardId) {
@@ -746,6 +1083,263 @@ function openAddDestinationSheet() {
       window.alert('Could not add destination: ' + (err.message || err));
     }
   });
+}
+
+function openEditDestinationSheet() {
+  const d = state.destination;
+  if (!d) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'sheet-overlay';
+  overlay.id = 'edit-destination-overlay';
+
+  const tags = [...(d.tags || [])];
+
+  overlay.innerHTML = `
+    <div class="sheet">
+      <div class="sheet-head">
+        <div>
+          <p class="eyebrow">Destination</p>
+          <h2>Edit ${escapeHtml(d.name)}</h2>
+        </div>
+        <button class="sheet-close" id="ed-close">✕</button>
+      </div>
+
+      <div class="field">
+        <label>Name</label>
+        <input
+          type="text"
+          id="ed-name"
+          value="${escapeHtml(d.name || '')}"
+          placeholder="Portugal"
+        />
+      </div>
+
+      <div class="field">
+        <label>Flag</label>
+        <input
+          type="text"
+          id="ed-flag"
+          value="${escapeHtml(d.flag || '')}"
+          placeholder="🇵🇹"
+        />
+      </div>
+
+      <div class="field">
+        <label>Short description</label>
+        <textarea
+          id="ed-short-description"
+          placeholder="What's drawing you here?"
+        >${escapeHtml(d.short_description || '')}</textarea>
+      </div>
+
+      <div class="field">
+        <label>
+          What we're looking for
+          <span class="field-hint">
+            The bigger picture — what are you curious about here?
+          </span>
+        </label>
+
+        <textarea
+          id="ed-description"
+          class="field-large"
+          placeholder="Slow travel, food, strange little places, architecture..."
+        >${escapeHtml(d.description || '')}</textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Start</label>
+          <input
+            type="date"
+            id="ed-start"
+            value="${d.planned_start || ''}"
+          />
+        </div>
+
+        <div class="field">
+          <label>End</label>
+          <input
+            type="date"
+            id="ed-end"
+            value="${d.planned_end || ''}"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Planned days</label>
+        <input
+          type="number"
+          id="ed-days"
+          min="0"
+          value="${d.planned_days || ''}"
+          placeholder="21"
+        />
+      </div>
+
+      <div class="field">
+        <label>Cover image URL</label>
+        <input
+          type="url"
+          id="ed-cover"
+          value="${escapeHtml(d.cover_image || '')}"
+          placeholder="https://..."
+        />
+      </div>
+
+      <div class="field">
+        <label>Google My Maps URL</label>
+        <input
+          type="url"
+          id="ed-map"
+          value="${escapeHtml(d.map_url || '')}"
+          placeholder="https://www.google.com/maps/d/..."
+        />
+      </div>
+
+      <div class="field">
+        <label>Tags</label>
+
+        <div class="editable-tags" id="ed-tags">
+          ${tags.map(tag => `
+            <button class="editable-tag" data-tag="${escapeHtml(tag)}">
+              ${escapeHtml(tag)} <span>×</span>
+            </button>
+          `).join('')}
+
+          <button class="editable-tag add" id="ed-add-tag">
+            + Add tag
+          </button>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="btn-secondary" id="ed-cancel">
+          Cancel
+        </button>
+
+        <button class="btn-primary" id="ed-save">
+          Save changes
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.getElementById('ed-close')
+    .addEventListener('click', () => overlay.remove());
+
+  document.getElementById('ed-cancel')
+    .addEventListener('click', () => overlay.remove());
+
+  function renderTags() {
+    const container = document.getElementById('ed-tags');
+
+    container.innerHTML = `
+      ${tags.map(tag => `
+        <button class="editable-tag" data-tag="${escapeHtml(tag)}">
+          ${escapeHtml(tag)} <span>×</span>
+        </button>
+      `).join('')}
+
+      <button class="editable-tag add" id="ed-add-tag">
+        + Add tag
+      </button>
+    `;
+
+    container.querySelectorAll('[data-tag]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const index = tags.indexOf(btn.dataset.tag);
+        if (index >= 0) tags.splice(index, 1);
+        renderTags();
+      });
+    });
+
+    document.getElementById('ed-add-tag')
+      .addEventListener('click', () => {
+        const value = window.prompt('Add a tag');
+
+        if (!value) return;
+
+        const tag = value.startsWith('#')
+          ? value
+          : `#${value}`;
+
+        if (!tags.includes(tag)) {
+          tags.push(tag);
+          renderTags();
+        }
+      });
+  }
+
+  renderTags();
+
+  document.getElementById('ed-save')
+    .addEventListener('click', async () => {
+
+      const button = document.getElementById('ed-save');
+
+      const patch = {
+        name: document.getElementById('ed-name').value.trim(),
+        flag: document.getElementById('ed-flag').value.trim() || null,
+        short_description:
+          document.getElementById('ed-short-description').value.trim() || null,
+        description:
+          document.getElementById('ed-description').value.trim() || null,
+        planned_start:
+          document.getElementById('ed-start').value || null,
+        planned_end:
+          document.getElementById('ed-end').value || null,
+        planned_days:
+          Number(document.getElementById('ed-days').value) || null,
+        cover_image:
+          document.getElementById('ed-cover').value.trim() || null,
+        map_url:
+          document.getElementById('ed-map').value.trim() || null,
+        tags
+      };
+
+      if (!patch.name) {
+        alert('Give the destination a name.');
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = 'Saving…';
+
+      try {
+        const updated =
+          await api.updateDestination(d.id, patch);
+
+        state.destination = updated;
+
+        const index =
+          state.destinations.findIndex(x => x.id === updated.id);
+
+        if (index >= 0) {
+          state.destinations[index] = {
+            ...state.destinations[index],
+            ...updated
+          };
+        }
+
+        overlay.remove();
+        renderDestination();
+        showToast('Destination updated');
+
+      } catch (err) {
+        button.disabled = false;
+        button.textContent = 'Save changes';
+        alert('Could not save: ' + (err.message || err));
+      }
+    });
 }
 
 // ============================================================
