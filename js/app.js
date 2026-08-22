@@ -963,46 +963,31 @@ function renderMapView(container, list) {
     ${state.destination.map_url ? `
       <div class="map-link-note">
         <span>📍 Full trip mapping lives in Google My Maps.</span>
-        <a class="tbtn" href="${escapeHtml(state.destination.map_url)}" target="_blank" rel="noopener">↗ Open My Maps</a>
-      </div>` : ''}
-    <div class="map-explorer">
-      container.innerHTML = `
-        ${state.destination.map_url ? `
-          <div class="map-link-note">
-            <span>📍 Full trip mapping lives in Google My Maps.</span>
-            <a class="tbtn" href="${escapeHtml(state.destination.map_url)}" target="_blank" rel="noopener">
-              ↗ Open My Maps
-            </a>
-          </div>` : ''}
+        <a class="tbtn"
+          href="${escapeHtml(state.destination.map_url)}"
+          target="_blank"
+          rel="noopener">
+          ↗ Open My Maps
+        </a>
+      </div>
+    ` : ''}
 
-        <div class="map-card-layout">
-          <div class="map-panel">
-            <div id="leaflet-map"></div>
-          </div>
+    <div class="map-card-layout">
+      <div class="map-panel">
+        <div id="leaflet-map"></div>
+      </div>
 
-          <div class="map-card-panel" id="map-card-panel">
-            <div class="empty-state">
-              <div class="glyph">📍</div>
-              <p>Select a location on the map</p>
-            </div>
-          </div>
+      <div class="map-card-panel" id="map-card-panel">
+        <div class="empty-state">
+          <div class="glyph">📍</div>
+          <p>Select a location on the map</p>
         </div>
-
-        ${!withLoc.length ? '<p style="color:var(--ink-faint); font-size:13px;">None of the visible cards have a location yet.</p>' : ''}
-      `;
-      <div class="map-card-panel">
-        ${
-          state.selectedMapCard
-            ? browseCardHtml(state.selectedMapCard)
-            : `
-              <div class="map-empty">
-                Select a place on the map
-              </div>
-            `
-        }
       </div>
     </div>
-    ${!withLoc.length ? '<p style="color:var(--ink-faint); font-size:13px; margin-top:10px;">None of the visible cards have a location yet.</p>' : ''}
+
+    ${!withLoc.length
+      ? '<p style="color:var(--ink-faint); font-size:13px;">None of the visible cards have a location yet.</p>'
+      : ''}
   `;
   if (!window.L) return; // Leaflet failed to load — panel shows without pins
   if (state.selectedMapCard) {
