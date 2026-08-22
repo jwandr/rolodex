@@ -137,10 +137,22 @@ function renderCatalogue() {
   const tiles = state.destinations.map(d => `
     <button class="dest-tile" data-id="${d.id}">
       <div class="tile-tab">${d.rolodex_cards?.[0]?.count || 0} saved</div>
-      <div class="tile-image">${d.flag || '✦'}</div>
+
+      <div
+        class="tile-image"
+        ${d.cover_image
+          ? `style="background-image: url('${escapeHtml(d.cover_image)}')"`
+          : ''}
+      >
+        ${!d.cover_image ? `<span>${d.flag || '✦'}</span>` : ''}
+      </div>
+
       <div class="tile-body">
         <h3>${escapeHtml(d.name)}</h3>
-        <p class="tile-meta">${formatDateRange(d.planned_start, d.planned_end)}${d.planned_days ? ' · ' + d.planned_days + ' days' : ''}</p>
+        <p class="tile-meta">
+          ${formatDateRange(d.planned_start, d.planned_end)}
+          ${d.planned_days ? ' · ' + d.planned_days + ' days' : ''}
+        </p>
         <p class="tile-desc">${escapeHtml(d.short_description || '')}</p>
       </div>
     </button>
