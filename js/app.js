@@ -183,7 +183,7 @@ function errorBlock(err) {
 // ============================================================
 async function openDestination(id) {
   state.view = 'destination';
-  state.destView = 'browse';
+  state.destView = 'grid';
   state.browseIndex = 0;
   state.filter = 'all';
   state.activeTags = new Set();
@@ -293,8 +293,8 @@ function renderDestination() {
       ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''}
 
       <div class="toolbar">
+        <button class="tbtn ${state.destView === 'grid' ? 'active' : ''}" data-destview="grid"><span class="ic">▦</span> Grid</button>  
         <button class="tbtn ${state.destView === 'browse' ? 'active' : ''}" data-destview="browse"><span class="ic">🗂️</span> Browse</button>
-        <button class="tbtn ${state.destView === 'grid' ? 'active' : ''}" data-destview="grid"><span class="ic">▦</span> Grid</button>
         <button class="tbtn ${state.destView === 'map' ? 'active' : ''}" data-destview="map"><span class="ic">📍</span> Map</button>
         <button class="tbtn accent" id="surprise-btn"><span class="ic">🎲</span> Surprise me</button>
       </div>
