@@ -448,13 +448,13 @@ function browseCardHtml(c) {
               href="${escapeHtml(c.url)}"
               target="_blank"
               rel="noopener">
-              ↗ Open source
+              ↗ Open
             </a>
           ` : ''}
 
           ${c.lat ? `
             <button class="tbtn" id="bc-view-map">
-              📍 View on map
+              📍 Map
             </button>
           ` : ''}
 
