@@ -136,7 +136,7 @@ function renderCatalogue() {
   const totalDays = state.destinations.reduce((sum, d) => sum + (d.planned_days || 0), 0);
 
   const tiles = state.destinations.map(d => `
-    <div class="dest-tile" data-id="${d.id}">
+    <button class="dest-tile" data-id="${d.id}">
       <div class="tile-tab">${d.rolodex_cards?.[0]?.count || 0} saved</div>
 
       <div
