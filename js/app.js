@@ -73,7 +73,7 @@ function renderConfigNeeded() {
 function renderShell() {
   app.innerHTML = `
     <div class="topbar">
-      <div class="brand" id="brand-home"><span class="mark">✦</span> Rolodex</div>
+      <div class="brand" id="brand-home"><span class="mark">✦</span> Traveldex</div>
       <div style="display:flex; align-items:center; gap:8px;">
         <button class="whoami" id="whoami-btn">${escapeHtml(state.whoami)}</button>
         <div class="status-pill ${state.online ? '' : 'offline'}" id="status-pill">
