@@ -1028,10 +1028,11 @@ function renderMapView(container, list) {
       const marker = L.circleMarker(
         [c.lat, c.lng],
         {
-          radius: isSelected ? 10 : 7,
+          radius: isSelected ? 9 : 7,
           weight: isSelected ? 3 : 2,
-          fillOpacity: isSelected ? 1 : 0.75,
-          opacity: 1,
+          color: isSelected ? '#d85c4a' : '#555',
+          fillColor: isSelected ? '#d85c4a' : '#fff',
+          fillOpacity: isSelected ? 1 : 0.9,
         }
       ).addTo(map);
 
@@ -1051,16 +1052,6 @@ function renderMapView(container, list) {
       padding: [30, 30],
       maxZoom: 14,
     });
-
-    // If we've arrived here from a card, make sure the selected
-    // location is visible and centred.
-    if (state.selectedMapCard?.lat != null && state.selectedMapCard?.lng != null) {
-      map.setView(
-        [state.selectedMapCard.lat, state.selectedMapCard.lng],
-        Math.max(map.getZoom(), 14),
-        { animate: false }
-      );
-    }
   } else {
     map.setView([39.5, -8], 6);
   }
