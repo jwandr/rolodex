@@ -1008,7 +1008,7 @@ function renderMapView(container, list) {
   const mapEl = document.getElementById('leaflet-map');
 
   const map = L.map(mapEl, {
-    scrollWheelZoom: false
+    scrollWheelZoom: true
   });
 
   L.tileLayer(
