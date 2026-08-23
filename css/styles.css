@@ -2386,7 +2386,7 @@ main {
 
 .grid-card-panel {
   position: sticky;
-  top: 24px;
+  top: 78px;
   min-height: 420px;
   border: 1px solid var(--line);
   border-radius: 16px;
