@@ -1110,10 +1110,10 @@ main {
 }
 
 .browse-card {
-  position: absolute;
+  position: relative;
 
   width: 100%;
-  max-width: 420px;
+  max-width: 600px;
 
   max-height: 800px;
 
