@@ -15,7 +15,7 @@ const state = {
   destination: null,   // currently open destination
   cards: [],            // all cards for the open destination
   view: 'catalogue',    // 'catalogue' | 'destination'
-  destView: 'browse',   // 'browse' | 'grid' | 'map'
+  destView: 'map',   // 'browse' | 'grid' | 'map'
   browseIndex: 0,
   filter: 'all',
   activeTags: new Set(),
@@ -284,9 +284,9 @@ function renderDestination() {
       ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''}
 
       <div class="toolbar">
+        <button class="tbtn ${state.destView === 'map' ? 'active' : ''}" data-destview="map"><span class="ic">📍</span> Map</button>
         <button class="tbtn ${state.destView === 'grid' ? 'active' : ''}" data-destview="grid"><span class="ic">▦</span> Grid</button>  
         <button class="tbtn ${state.destView === 'browse' ? 'active' : ''}" data-destview="browse"><span class="ic">🗂️</span> Browse</button>
-        <button class="tbtn ${state.destView === 'map' ? 'active' : ''}" data-destview="map"><span class="ic">📍</span> Map</button>
         <button class="tbtn accent" id="surprise-btn"><span class="ic">🎲</span> Surprise me</button>
       </div>
 
