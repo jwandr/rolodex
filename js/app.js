@@ -176,6 +176,13 @@ function renderCatalogue() {
     </div>
   `;
 
+    // Open destination when a tile is clicked
+  main.querySelectorAll('.dest-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      openDestination(tile.dataset.id);
+    });
+  });
+
   main.querySelectorAll('[data-destview]').forEach(el => {
     el.addEventListener('click', () => {
       state.destView = el.dataset.destview;
@@ -727,9 +734,6 @@ function openEditCardSheet(card) {
             hidden
           ></div>
         </div>
-
-        <input type="hidden" id="ec-lat" value="${card.lat ?? ''}" />
-        <input type="hidden" id="ec-lng" value="${card.lng ?? ''}" />
 
         <p class="field-hint">
           Start typing a place and choose the matching location.
