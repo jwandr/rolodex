@@ -196,7 +196,7 @@ function errorBlock(err) {
 // ============================================================
 async function openDestination(id) {
   state.view = 'destination';
-  state.destView = 'grid';
+  state.destView = 'map';
   state.browseIndex = 0;
   state.filter = 'all';
   state.activeTags = new Set();
