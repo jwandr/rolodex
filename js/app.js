@@ -24,6 +24,7 @@ const state = {
   whoami: localStorage.getItem('rolodex_whoami') || '',
   leafletMap: null,
   selectedMapCard: null,
+  selectedGridCard: null,
 };
 
 const app = document.getElementById('app');
@@ -175,8 +176,27 @@ function renderCatalogue() {
     </div>
   `;
 
-  main.querySelectorAll('.dest-tile').forEach(el => {
-    el.addEventListener('click', () => openDestination(el.dataset.id));
+  main.querySelectorAll('[data-destview]').forEach(el => {
+    el.addEventListener('click', () => {
+      state.destView = el.dataset.destview;
+
+      // Preserve the selected card when moving between
+      // grid and map, but clear it when going to Browse.
+      if (state.destView === 'grid' && state.selectedMapCard) {
+        state.selectedGridCard = state.selectedMapCard;
+      }
+
+      if (state.destView === 'map' && state.selectedGridCard) {
+        state.selectedMapCard = state.selectedGridCard;
+      }
+
+      if (state.destView === 'browse') {
+        state.selectedGridCard = null;
+        state.selectedMapCard = null;
+      }
+
+      renderDestination();
+    });
   });
   document.getElementById('add-dest').addEventListener('click', openAddDestinationSheet);
 }
@@ -349,17 +369,79 @@ function renderDestination() {
 function renderDestContent() {
   const container = document.getElementById('dest-content');
   if (!container) return;
+
   const filtered = getFilteredCards();
 
   if (state.destView === 'grid') {
-    container.innerHTML = filtered.length ? `<div class="card-grid">${filtered.map(cardTileHtml).join('')}</div>` : emptyForFilter();
-    container.querySelectorAll('.rcard').forEach(el => {
-      el.addEventListener('click', () => openBrowseAt(el.dataset.id));
-    });
+    renderGridView(container, filtered);
   } else if (state.destView === 'map') {
     renderMapView(container, filtered);
   } else {
     renderBrowseView(container, filtered);
+  }
+}
+
+function renderGridView(container, list) {
+  if (!list.length) {
+    container.innerHTML = emptyForFilter();
+    return;
+  }
+
+  // If the selected card is no longer in the filtered list,
+  // clear the selection.
+  if (
+    state.selectedGridCard &&
+    !list.some(c => c.id === state.selectedGridCard.id)
+  ) {
+    state.selectedGridCard = null;
+  }
+
+  container.innerHTML = `
+    <div class="grid-card-layout">
+
+      <div class="grid-panel">
+        <div class="card-grid">
+          ${list.map(cardTileHtml).join('')}
+        </div>
+      </div>
+
+      <div class="grid-card-panel" id="grid-card-panel">
+        ${
+          state.selectedGridCard
+            ? browseCardHtml(state.selectedGridCard)
+            : `
+              <div class="empty-state">
+                <div class="glyph">▦</div>
+                <p>Select a card to see more</p>
+              </div>
+            `
+        }
+      </div>
+
+    </div>
+  `;
+
+  // Highlight selected card
+  container.querySelectorAll('.rcard').forEach(el => {
+    const isSelected =
+      state.selectedGridCard?.id === el.dataset.id;
+
+    el.classList.toggle('selected', isSelected);
+
+    el.addEventListener('click', () => {
+      const card = state.cards.find(c => c.id === el.dataset.id);
+      if (!card) return;
+
+      state.selectedGridCard = card;
+      touchViewed(card.id);
+
+      renderGridView(container, list);
+    });
+  });
+
+  // Wire actions in the right-hand detail panel
+  if (state.selectedGridCard) {
+    wireBrowseCardActions(state.selectedGridCard);
   }
 }
 
@@ -491,11 +573,14 @@ function wireBrowseCardActions(c) {
     } catch (err) { showToast('Could not remove — try again'); }
   });
   const mapBtn = document.getElementById('bc-view-map');
-  if (mapBtn) mapBtn.addEventListener('click', () => {
-    state.selectedMapCard = c;
-    state.destView = 'map';
-    renderDestination();
-  });
+  if (mapBtn) {
+    mapBtn.addEventListener('click', () => {
+      state.selectedMapCard = c;
+      state.selectedGridCard = null;
+      state.destView = 'map';
+      renderDestination();
+    });
+  }
   const editBtn = document.getElementById('bc-edit');
   if (editBtn) {
     editBtn.addEventListener('click', () => {

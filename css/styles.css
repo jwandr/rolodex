@@ -2372,3 +2372,62 @@ main {
   border: 1px solid var(--line);
   overflow-y: auto;
 }
+
+.grid-card-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+.grid-panel {
+  min-width: 0;
+}
+
+.grid-card-panel {
+  position: sticky;
+  top: 24px;
+  min-height: 420px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.grid-card-panel .browse-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.rcard {
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.rcard:hover {
+  transform: translateY(-2px);
+}
+
+.rcard.selected {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 900px) {
+  .grid-card-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-card-panel {
+    position: static;
+  }
+}
