@@ -287,7 +287,7 @@ function renderDestination() {
         <button class="tbtn ${state.destView === 'map' ? 'active' : ''}" data-destview="map"><span class="ic">📍</span> Map</button>
         <button class="tbtn ${state.destView === 'grid' ? 'active' : ''}" data-destview="grid"><span class="ic">▦</span> Grid</button>  
         <button class="tbtn ${state.destView === 'browse' ? 'active' : ''}" data-destview="browse"><span class="ic">🗂️</span> Browse</button>
-        <button class="tbtn accent" id="surprise-btn"><span class="ic">🎲</span> Surprise me</button>
+        <button class="tbtn" id="surprise-btn"><span class="ic">🎲</span> Surprise me</button>
       </div>
 
       ${insights.length ? `
