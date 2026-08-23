@@ -1119,7 +1119,7 @@ function renderMapView(container, list) {
         {
           radius: isSelected ? 9 : 7,
           weight: isSelected ? 3 : 2,
-          color: isSelected ? '#FFDE21' : '#555',
+          color: isSelected ? '#FFDE21' : '#fff',
           fillColor: isSelected ? '#d85c4a' : '#d85c4a',
           fillOpacity: isSelected ? 1 : 0.9,
         }
