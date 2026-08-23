@@ -492,6 +492,7 @@ function wireBrowseCardActions(c) {
   });
   const mapBtn = document.getElementById('bc-view-map');
   if (mapBtn) mapBtn.addEventListener('click', () => {
+    state.selectedMapCard = c;
     state.destView = 'map';
     renderDestination();
   });
@@ -954,11 +955,13 @@ function touchViewed(id) { api.touchLastViewed(id); }
 
 // ---------- Map view ----------
 function renderMapView(container, list) {
-  const withLoc = list.filter(c => c.lat && c.lng);
+  const withLoc = list.filter(c => c.lat != null && c.lng != null);
+
   if (state.leafletMap) {
     state.leafletMap.remove();
     state.leafletMap = null;
   }
+
   container.innerHTML = `
     ${state.destination.map_url ? `
       <div class="map-link-note">
@@ -995,32 +998,73 @@ function renderMapView(container, list) {
       ? '<p style="color:var(--ink-faint); font-size:13px;">None of the visible cards have a location yet.</p>'
       : ''}
   `;
-  if (!window.L) return; // Leaflet failed to load — panel shows without pins
+
+  if (!window.L) return;
+
   if (state.selectedMapCard) {
     wireBrowseCardActions(state.selectedMapCard);
   }
+
   const mapEl = document.getElementById('leaflet-map');
-  const map = L.map(mapEl, { scrollWheelZoom: false });
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap, © CARTO',
-    maxZoom: 19,
-  }).addTo(map);
+
+  const map = L.map(mapEl, {
+    scrollWheelZoom: false
+  });
+
+  L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    {
+      attribution: '© OpenStreetMap, © CARTO',
+      maxZoom: 19,
+    }
+  ).addTo(map);
 
   if (withLoc.length) {
     const bounds = [];
+
     withLoc.forEach(c => {
-      const marker = L.marker([c.lat, c.lng]).addTo(map);
-      marker.bindPopup(`<strong>${escapeHtml(c.title)}</strong>`);
+      const isSelected = state.selectedMapCard?.id === c.id;
+
+      const marker = L.circleMarker(
+        [c.lat, c.lng],
+        {
+          radius: isSelected ? 10 : 7,
+          weight: isSelected ? 3 : 2,
+          fillOpacity: isSelected ? 1 : 0.75,
+          opacity: 1,
+        }
+      ).addTo(map);
+
+      marker.bindPopup(
+        `<strong>${escapeHtml(c.title)}</strong>`
+      );
+
       marker.on('click', () => {
         state.selectedMapCard = c;
         renderMapView(container, list);
       });
+
       bounds.push([c.lat, c.lng]);
     });
-    map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+
+    map.fitBounds(bounds, {
+      padding: [30, 30],
+      maxZoom: 14,
+    });
+
+    // If we've arrived here from a card, make sure the selected
+    // location is visible and centred.
+    if (state.selectedMapCard?.lat != null && state.selectedMapCard?.lng != null) {
+      map.setView(
+        [state.selectedMapCard.lat, state.selectedMapCard.lng],
+        Math.max(map.getZoom(), 14),
+        { animate: false }
+      );
+    }
   } else {
     map.setView([39.5, -8], 6);
   }
+
   state.leafletMap = map;
 }
 
