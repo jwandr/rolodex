@@ -281,7 +281,7 @@ function renderDestination() {
         <button class="icon-btn" id="edit-destination" title="Edit destination">✎</button>
       </div>
       
-      ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''}
+      <!-- ${d.short_description ? `<p class="desc">${escapeHtml(d.short_description)}</p>` : ''} -->
 
       <div class="toolbar">
         <button class="tbtn ${state.destView === 'map' ? 'active' : ''}" data-destview="map"><span class="ic">📍</span> Map</button>
