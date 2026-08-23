@@ -978,10 +978,16 @@ function renderMapView(container, list) {
       </div>
 
       <div class="map-card-panel" id="map-card-panel">
-        <div class="empty-state">
-          <div class="glyph">📍</div>
-          <p>Select a location on the map</p>
-        </div>
+        ${
+          state.selectedMapCard
+            ? browseCardHtml(state.selectedMapCard)
+            : `
+              <div class="empty-state">
+                <div class="glyph">📍</div>
+                <p>Select a location on the map</p>
+              </div>
+            `
+        }
       </div>
     </div>
 
